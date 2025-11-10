@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-11-10T21:10:14.589232",
+  "total_tests": 9,
+  "passed_tests": 8,
+  "failed_tests": 1,
+  "success_rate": 88.88888888888889,
+  "test_details": [
+    {
+      "test_name": "Root API Endpoint",
+      "status": "PASSED",
+      "details": "Response: {'message': 'RAG-SLM API', 'status': 'running'}",
+      "expected_status": 200,
+      "actual_status": 200
+    },
+    {
+      "test_name": "Health Check Endpoint",
+      "status": "PASSED",
+      "details": "Health check working correctly - Ollama disconnected as expected: {'status': 'unhealthy', 'error': '[Errno 99] Cannot assign requested address', 'ollama': 'disconnected', 'note': 'Please run: ollama serve && ollama pull qwen2.5:3b && ollama pull nomic-embed-text'}",
+      "expected_status": 200,
+      "actual_status": 200
+    },
+    {
+      "test_name": "Documents List Endpoint",
+      "status": "PASSED",
+      "details": "Found 0 documents",
+      "expected_status": 200,
+      "actual_status": 200
+    },
+    {
+      "test_name": "Collections Endpoint",
+      "status": "PASSED",
+      "details": "Found collections: []",
+      "expected_status": 200,
+      "actual_status": 200
+    },
+    {
+      "test_name": "Upload Endpoint (No Ollama)",
+      "status": "PASSED",
+      "details": "Upload correctly returns 503 when Ollama is not running",
+      "expected_status": 503,
+      "actual_status": 503
+    },
+    {
+      "test_name": "Chat Endpoint (No Ollama)",
+      "status": "PASSED",
+      "details": "Chat correctly returns 503 when Ollama is not running",
+      "expected_status": 503,
+      "actual_status": 503
+    },
+    {
+      "test_name": "Invalid Endpoint /api/invalid",
+      "status": "PASSED",
+      "details": "Endpoint /api/invalid returned 404",
+      "expected_status": 404,
+      "actual_status": 404
+    },
+    {
+      "test_name": "Invalid Endpoint /api/documents/invalid",
+      "status": "FAILED",
+      "details": "Endpoint /api/documents/invalid returned 405",
+      "expected_status": 404,
+      "actual_status": 405
+    },
+    {
+      "test_name": "Invalid Endpoint /api/chat/invalid",
+      "status": "PASSED",
+      "details": "Endpoint /api/chat/invalid returned 404",
+      "expected_status": 404,
+      "actual_status": 404
+    }
+  ]
+}
