@@ -225,19 +225,8 @@ def extract_files_from_folder(zip_path: Path, extract_to: Path) -> List[Path]:
     return extracted_files
 
 # Session memory store (in production, use Redis)
+# Store chat history as list of messages
 session_memories = {}
-
-def get_or_create_memory(session_id: str):
-    """Get or create conversation memory for a session"""
-    if session_id not in session_memories:
-        session_memories[session_id] = ConversationTokenBufferMemory(
-            llm=llm,
-            max_token_limit=1500,
-            memory_key="chat_history",
-            return_messages=True,
-            output_key="answer"
-        )
-    return session_memories[session_id]
 
 # Routes
 @api_router.get("/")
