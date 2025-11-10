@@ -413,8 +413,11 @@ async def chat(request: ChatRequest):
         # Generate session ID if not provided
         session_id = request.session_id or str(uuid.uuid4())
         
-        # Get or create memory for this session
-        memory = get_or_create_memory(session_id)
+        # Get chat history for this session
+        if session_id not in session_memories:
+            session_memories[session_id] = []
+        
+        chat_history = session_memories[session_id]
         
         # Create retriever with optional collection filtering
         search_kwargs = {
@@ -425,30 +428,50 @@ async def chat(request: ChatRequest):
         if request.collection:
             search_kwargs["filter"] = {"collection": request.collection}
         
-        retriever = vectorstore.as_retriever(
-            search_type="similarity_score_threshold",
-            search_kwargs=search_kwargs
+        # Retrieve relevant documents
+        docs = vectorstore.similarity_search_with_score(
+            request.query,
+            k=3,
+            filter=search_kwargs.get("filter")
         )
         
-        # Create conversational chain
-        qa_chain = ConversationalRetrievalChain.from_llm(
-            llm=llm,
-            retriever=retriever,
-            memory=memory,
-            return_source_documents=True,
-            verbose=False
-        )
+        # Filter by score threshold
+        relevant_docs = [doc for doc, score in docs if score >= 0.5]
         
-        # Get response
-        result = qa_chain({"question": request.query})
-        
-        # Extract source documents
+        # Extract source documents and context
         sources = []
-        if "source_documents" in result:
-            for doc in result["source_documents"]:
-                if "filename" in doc.metadata:
-                    sources.append(doc.metadata["filename"])
+        context_parts = []
+        for doc in relevant_docs:
+            if "filename" in doc.metadata:
+                sources.append(doc.metadata["filename"])
+            context_parts.append(doc.page_content)
+        
         sources = list(set(sources))  # Remove duplicates
+        context = "\n\n".join(context_parts)
+        
+        # Build conversation messages
+        messages = [
+            SystemMessage(content="You are a helpful assistant that answers questions based on the provided context. If the answer is not in the context, say so."),
+        ]
+        
+        # Add recent chat history (last 5 exchanges to fit in 1500 tokens)
+        for msg in chat_history[-10:]:
+            messages.append(msg)
+        
+        # Add current query with context
+        user_message = f"Context:\n{context}\n\nQuestion: {request.query}"
+        messages.append(HumanMessage(content=user_message))
+        
+        # Get response from LLM
+        response = llm.invoke(messages)
+        answer = response.content
+        
+        # Update chat history (keep last 10 messages)
+        chat_history.append(HumanMessage(content=request.query))
+        chat_history.append(AIMessage(content=answer))
+        if len(chat_history) > 10:
+            chat_history = chat_history[-10:]
+        session_memories[session_id] = chat_history
         
         # Save chat history to MongoDB
         chat_history_doc = await db.chat_history.find_one({"session_id": session_id})
