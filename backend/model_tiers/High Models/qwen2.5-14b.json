@@ -1,0 +1,5 @@
+{
+    "name": "qwen2.5:14b",
+    "ram_gb": 16,
+    "description": "Qwen 2.5 14B. Powerful reasoning, requires 16GB VRAM/RAM."
+}

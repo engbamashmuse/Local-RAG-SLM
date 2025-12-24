@@ -1,0 +1,5 @@
+{
+    "name": "qwen2.5:3b",
+    "ram_gb": 6,
+    "description": "Qwen 2.5 3B. Balanced performance (Default)."
+}

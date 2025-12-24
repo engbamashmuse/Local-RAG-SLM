@@ -34,12 +34,13 @@ try:
     MODEL_NAME = (ROOT_DIR / ".model").read_text(encoding="utf-8").strip()
 except Exception as e:
     logging.warning(f"Could not read .model file: {e}")
-    # Try to load first mid model from catalog, else unknown
+    # Try to load first mid model from catalog folders, else unknown
     try:
-        catalog_path = ROOT_DIR / "models_catalog.yaml"
-        with open(catalog_path, "r", encoding="utf-8") as f:
-            cat = yaml.safe_load(f)
-            MODEL_NAME = cat['mid'][0]['name']
+        mid_dir = ROOT_DIR / "model_tiers/Mid Models"
+        first_mid = next(mid_dir.glob("*.json"))
+        import json
+        data = json.loads(first_mid.read_text(encoding="utf-8"))
+        MODEL_NAME = data["name"]
     except:
         MODEL_NAME = "unknown"
     logging.info(f"Defaulting to model: {MODEL_NAME}")
@@ -493,15 +494,31 @@ async def get_collections():
 
 @api_router.get("/models")
 async def get_models():
-    """Get available models from catalog"""
+    """Get available models from dynamic catalog folders"""
     try:
-        catalog_path = ROOT_DIR / "models_catalog.yaml"
-        if not catalog_path.exists():
-            return {"error": "Catalog not found"}
+        tiers_dir = ROOT_DIR / "model_tiers"
+        catalog = {"low": [], "mid": [], "high": []}
         
-        with open(catalog_path, "r", encoding="utf-8") as f:
-            catalog = yaml.safe_load(f)
-            
+        # Map folder names to catalog keys
+        folder_map = {
+            "Low Models": "low",
+            "Mid Models": "mid",
+            "High Models": "high"
+        }
+        
+        if tiers_dir.exists():
+            for folder_name, key in folder_map.items():
+                folder_path = tiers_dir / folder_name
+                if folder_path.exists():
+                    for f in folder_path.glob("*.json"):
+                        try:
+                            # Read JSON descriptor
+                            import json
+                            data = json.loads(f.read_text(encoding="utf-8"))
+                            catalog[key].append(data)
+                        except Exception as e:
+                            logging.error(f"Error reading model file {f}: {e}")
+        
         # Get current model
         try:
             current = (ROOT_DIR / ".model").read_text(encoding="utf-8").strip()
@@ -516,20 +533,21 @@ async def get_models():
 @api_router.post("/model/set")
 async def set_model(request: ModelSetRequest):
     """Switch active model (Async)"""
-    # Validate against catalog
-    catalog_path = ROOT_DIR / "models_catalog.yaml"
-    if catalog_path.exists():
-        with open(catalog_path, "r", encoding="utf-8") as f:
-            catalog = yaml.safe_load(f)
-        
-        # Flatten catalog to find valid names
-        valid_models = []
-        for tier in catalog.values():
-            for m in tier:
-                valid_models.append(m["name"])
-        
-        if request.model not in valid_models:
-            raise HTTPException(status_code=400, detail=f"Model {request.model} not in catalog")
+    # Build valid models list dynamically
+    valid_models = []
+    tiers_dir = ROOT_DIR / "model_tiers"
+    if tiers_dir.exists():
+        for f in tiers_dir.rglob("*.json"):
+            try:
+                import json
+                data = json.loads(f.read_text(encoding="utf-8"))
+                valid_models.append(data.get("name"))
+            except:
+                pass
+    
+    # If catalog is empty/missing, maybe fallback or just proceed (loose validation)
+    if valid_models and request.model not in valid_models:
+        raise HTTPException(status_code=400, detail=f"Model {request.model} not in catalog")
     
     # Create Job
     job_id = str(uuid.uuid4())
@@ -565,7 +583,7 @@ async def get_prompts():
         try:
             content = f.read_text(encoding="utf-8")
             prompts.append({
-                "name": f.stem.replace("_", " ").title(),
+                "name": f.stem.replace("_", " "),
                 "filename": f.name,
                 "content": content
             })

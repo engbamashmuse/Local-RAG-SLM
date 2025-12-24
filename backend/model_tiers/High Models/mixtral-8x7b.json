@@ -1,0 +1,5 @@
+{
+    "name": "mixtral:8x7b",
+    "ram_gb": 32,
+    "description": "Mixtral 8x7B MoE. High performance, requires 32GB+ RAM."
+}

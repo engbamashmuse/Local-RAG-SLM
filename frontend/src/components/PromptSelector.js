@@ -23,10 +23,10 @@ const PromptSelector = ({ apiUrl, onSelectPrompt }) => {
                 console.warn("Failed to fetch prompts, using defaults", err);
                 setPrompts([
                     { name: "Chat (Default)", content: "" },
-                    { name: "Smart Summary", content: "Summarize the following text..." },
+                    { name: "Smart summary", content: "Summarize the following text..." },
                     { name: "MoM", content: "Generate Minutes of Meeting..." },
-                    { name: "Action Table", content: "Create an action items table..." },
-                    { name: "Decision Support Matrix", content: "Create a decision matrix..." }
+                    { name: "Action table", content: "Create an action items table..." },
+                    { name: "decision-support matrix", content: "Create a decision matrix..." }
                 ]);
             }
         };

@@ -1,0 +1,5 @@
+{
+    "name": "phi3:mini",
+    "ram_gb": 4,
+    "description": "Microsoft Phi-3 Mini (3.8B). Best for low-end laptops."
+}

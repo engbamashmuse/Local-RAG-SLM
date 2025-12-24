@@ -1,0 +1,5 @@
+{
+    "name": "tinyllama",
+    "ram_gb": 2,
+    "description": "TinyLlama 1.1B. Very lightweight, lower reasoning capability."
+}

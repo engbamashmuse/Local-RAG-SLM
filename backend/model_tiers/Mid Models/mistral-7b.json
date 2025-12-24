@@ -1,0 +1,5 @@
+{
+    "name": "mistral:7b",
+    "ram_gb": 8,
+    "description": "Mistral 7B. Strong reasoning, requires 8GB+ RAM."
+}
