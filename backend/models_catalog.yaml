@@ -8,8 +8,6 @@ low:
   - name: "tinyllama"
     ram_gb: 2
     description: "TinyLlama 1.1B. Very lightweight, lower reasoning capability."
-
-mid:
   - name: "qwen2.5:3b"
     ram_gb: 6
     description: "Qwen 2.5 3B. Balanced performance (Default)."
@@ -20,10 +18,12 @@ mid:
     ram_gb: 8
     description: "Mistral 7B. Strong reasoning, requires 8GB+ RAM."
 
-high:
+mid:
   - name: "qwen2.5:14b"
     ram_gb: 16
     description: "Qwen 2.5 14B. Powerful reasoning, requires 16GB VRAM/RAM."
+
+high:
   - name: "llama3.1:70b"
     ram_gb: 48
     description: "Llama 3.1 70B. SOTA open model, requires massive resources."

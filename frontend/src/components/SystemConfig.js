@@ -157,15 +157,15 @@ const SystemConfig = ({ apiUrl }) => {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                     {/* Tier Selector */}
                     <div className="md:col-span-3 space-y-2">
-                        <label className="text-sm font-medium text-slate-700">Performance Tier</label>
+                        <label className="text-sm font-medium text-slate-700">LLM Tier</label>
                         <Select value={selectedTier} onValueChange={(val) => { setSelectedTier(val); setSelectedModel(""); }} disabled={switching}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select Tier" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="low">Low (1-3GB RAM)</SelectItem>
-                                <SelectItem value="mid">Mid (4-8GB RAM)</SelectItem>
-                                <SelectItem value="high">High (16GB+ RAM)</SelectItem>
+                                <SelectItem value="low">Low (≤ 8B)</SelectItem>
+                                <SelectItem value="mid">Mid (8-30B)</SelectItem>
+                                <SelectItem value="high">High (30-70B)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

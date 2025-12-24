@@ -20,7 +20,14 @@ const PromptSelector = ({ apiUrl, onSelectPrompt }) => {
                 const res = await axios.get(`${apiUrl}/prompts`);
                 setPrompts(res.data.prompts || []);
             } catch (err) {
-                console.error("Failed to fetch prompts", err);
+                console.warn("Failed to fetch prompts, using defaults", err);
+                setPrompts([
+                    { name: "Chat (Default)", content: "" },
+                    { name: "Smart Summary", content: "Summarize the following text..." },
+                    { name: "MoM", content: "Generate Minutes of Meeting..." },
+                    { name: "Action Table", content: "Create an action items table..." },
+                    { name: "Decision Support Matrix", content: "Create a decision matrix..." }
+                ]);
             }
         };
         fetchPrompts();

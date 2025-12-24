@@ -18,7 +18,7 @@ import { Upload, FileText, MessageSquare, Trash2, Send, Database, Loader2, Folde
 import SystemConfig from "@/components/SystemConfig";
 import PromptSelector from "@/components/PromptSelector";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 const API = `${BACKEND_URL}/api`;
 
 const Home = () => {

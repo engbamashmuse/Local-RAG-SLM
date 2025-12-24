@@ -1,0 +1,1 @@
+Generate Minutes of Meeting (MoM) for the provided transcript or notes. Include Attendees, Agenda Items, Key Discussions, Decisions Made, and Action Items with owners and deadlines.
